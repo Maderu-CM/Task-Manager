@@ -77,6 +77,7 @@ class Rating(db.Model):
     feedback = db.Column(db.String(200))
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
 
+import routes
 
 if __name__ == '__main__':
     app.run(debug=True)
