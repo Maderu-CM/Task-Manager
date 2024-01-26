@@ -71,6 +71,27 @@ def register_user():
 
     return jsonify({'message': 'User registered successfully!'}), 200
 
+ 
+#user login
+
+@app.route('/login_user', methods=['POST'])
+def login():
+    data = request.get_json()
+    email = data.get('email')
+    password = data.get('password')
+
+    user = User.query.filter_by(email=email).first()
+
+    if user and bcrypt.check_password_hash(user.password, password):
+        access_token = create_access_token(identity={'user_id': user.id})
+        return jsonify({'access_token': access_token, 'message': 'Login successful'}), 200
+    else:
+        return jsonify({'message': 'Invalid Credentials!'}), 401
+    
+    #creating a project
+    
+
+
 
 if __name__ == '__main__':
     app.run(debug=True)
