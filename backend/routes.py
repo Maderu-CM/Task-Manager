@@ -125,5 +125,63 @@ def create_project():
     return jsonify({'message': 'New Project created successfully'}), 200
 
 
+#creating a task
+
+@app.route('/create_task', methods=['POST'])
+@jwt_required()
+def create_task():
+    current_user = get_jwt_identity()
+
+    if not current_user or 'user_id' not in current_user:
+        return jsonify({'message': 'Create an account'}), 403
+
+    user_id = current_user['user_id']
+
+    # Check if the user exists in your database or handle it according to your authentication mechanism
+    user_exists = User.query.get(user_id)
+
+    if not user_exists:
+        return jsonify({'message': 'User not found'}), 404
+
+    data = request.get_json()
+    title = data.get('title')
+    description = data.get('description')
+    priority = data.get('priority')
+    start_date_str = data.get('start_date')
+    due_date_str = data.get('due_date')
+    status = data.get('status')
+    project_id = data.get('project_id')  # Assuming project_id is provided in the request
+
+    # Check if the project exists and belongs to the user
+    project = Project.query.filter_by(id=project_id, user_id=user_id).first()
+
+    if not project:
+        return jsonify({'message': 'Project not found or does not belong to the user'}), 404
+
+    # Convert start_date and due_date to datetime objects and then format them
+    try:
+        start_date = datetime.strptime(start_date_str, '%Y-%m-%d')
+        due_date = datetime.strptime(due_date_str, '%Y-%m-%d')
+    except ValueError:
+        return jsonify({'message': 'Invalid date format. Use yyyy-mm-dd'}), 400
+
+    # Create the new task with formatted dates
+    new_task = Task(
+        title=title,
+        user_id=user_id,
+        project_id=project_id,
+        description=description,
+        priority=priority,
+        start_date=start_date,
+        due_date=due_date,
+        status=status
+    )
+
+    db.session.add(new_task)
+    db.session.commit()
+
+    return jsonify({'message': 'New Task created successfully'}), 200
+
+
 if __name__ == '__main__':
     app.run(debug=True)
