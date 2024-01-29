@@ -5,6 +5,8 @@ from flask_cors import CORS
 from flask_bcrypt import Bcrypt
 from flask_jwt_extended import JWTManager, jwt_required, create_access_token, get_jwt_identity, get_current_user, unset_jwt_cookies
 from datetime import datetime
+from sqlalchemy.exc import IntegrityError
+
 
 
 CORS(app)
@@ -71,8 +73,8 @@ def register_user():
 
     return jsonify({'message': 'User registered successfully!'}), 200
 
- 
-#user login
+
+# user login
 
 @app.route('/login_user', methods=['POST'])
 def login():
@@ -87,10 +89,40 @@ def login():
         return jsonify({'access_token': access_token, 'message': 'Login successful'}), 200
     else:
         return jsonify({'message': 'Invalid Credentials!'}), 401
-    
-    #creating a project
-    
 
+# creating a project
+@app.route('/createproject', methods=['POST'])
+@jwt_required()
+def create_project():
+    current_user = get_jwt_identity()
+
+    if not current_user or 'user_id' not in current_user:
+        return jsonify({'message': 'Create an account'}), 403
+
+    user_id = current_user['user_id']
+
+    # Check if the user exists in your database or handle it according to your authentication mechanism
+    user_exists = User.query.get(user_id)
+
+    if not user_exists:
+        return jsonify({'message': 'User not found'}), 404
+
+    data = request.get_json()
+    title = data.get('title')
+    objective = data.get('objective')
+    category = data.get('category')
+
+    new_project = Project(
+        title=title,
+        objective=objective,
+        category=category,
+        user_id=user_id
+    )
+
+    db.session.add(new_project)
+    db.session.commit()
+
+    return jsonify({'message': 'New Project created successfully'}), 200
 
 
 if __name__ == '__main__':
