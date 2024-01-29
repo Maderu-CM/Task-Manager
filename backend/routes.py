@@ -137,7 +137,7 @@ def create_task():
 
     user_id = current_user['user_id']
 
-    # Check if the user exists in your database or handle it according to your authentication mechanism
+    # Check if the user exists in your database 
     user_exists = User.query.get(user_id)
 
     if not user_exists:
@@ -150,7 +150,7 @@ def create_task():
     start_date_str = data.get('start_date')
     due_date_str = data.get('due_date')
     status = data.get('status')
-    project_id = data.get('project_id')  # Assuming project_id is provided in the request
+    project_id = data.get('project_id')  
 
     # Check if the project exists and belongs to the user
     project = Project.query.filter_by(id=project_id, user_id=user_id).first()
@@ -174,7 +174,7 @@ def create_task():
         priority=priority,
         start_date=start_date,
         due_date=due_date,
-        status=status
+        status="Pending"
     )
 
     db.session.add(new_task)
@@ -182,6 +182,68 @@ def create_task():
 
     return jsonify({'message': 'New Task created successfully'}), 200
 
+#project review
+
+
+@app.route('/project_review/<int:project_id>', methods=['POST'])
+@jwt_required()
+def project_review(project_id):
+    current_user = get_jwt_identity()
+
+    if not current_user or 'user_id' not in current_user:
+        return jsonify({'message': 'Create an account'}), 403
+
+    user_id = current_user['user_id']
+
+    # Check if the user exists in your database
+    user_exists = User.query.get(user_id)
+
+    if not user_exists:
+        return jsonify({'message': 'User not found'}), 404
+
+    # Check if the project exists and belongs to the user
+    project = Project.query.filter_by(id=project_id, user_id=user_id).first()
+
+    if not project:
+        return jsonify({'message': 'Can only be reviewed by the Project Administrator.'}), 404
+
+    data = request.get_json()
+    comment = data.get('comment')
+
+    # Create a new review
+    new_review = Review(user_id=user_id, project_id=project_id, comment=comment)
+    db.session.add(new_review)
+    db.session.commit()
+
+    return jsonify({'message': 'Review added successfully'}), 200
+
+#user giving a  rating and feedback
+@app.route('/feedback', methods=['POST'])
+@jwt_required()
+def user_feedback():
+    current_user = get_jwt_identity()
+
+    if not current_user or 'user_id' not in current_user:
+        return jsonify({'message': 'Create an account'}), 403
+
+    user_id = current_user['user_id']
+
+    data = request.get_json()
+    rating = data.get('rating')
+    feedback_text = data.get('feedback')
+
+    # Check if the user exists in your database
+    user_exists = User.query.get(user_id)
+
+    if not user_exists:
+        return jsonify({'message': 'User not found'}), 404
+
+    # Create a new feedback
+    new_feedback = Rating(user_id=user_id, rating=rating, feedback=feedback_text)
+    db.session.add(new_feedback)
+    db.session.commit()
+
+    return jsonify({'message': 'Thank you for your feedback!'}), 200
 
 if __name__ == '__main__':
     app.run(debug=True)
