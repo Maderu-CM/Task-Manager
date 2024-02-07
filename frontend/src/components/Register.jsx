@@ -30,7 +30,7 @@ function Register() {
 
       if (response.ok) {
         setSuccessMessage('Registration successful');
-        navigate('/vehicleOwner/login'); 
+        navigate('/login'); 
       } else {
         const data = await response.json();
         setError(data.message);

@@ -31,7 +31,7 @@ function Login() {
         const data = await response.json();
         
         localStorage.setItem('access_token', data.access_token);
-        navigate('/UserDashboard'); 
+        navigate('/dashboard'); 
       } else {
         const data = await response.json();
         setError(data.message);
@@ -44,7 +44,7 @@ function Login() {
   return (
     <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh' }}>
   <div className="card" style={{ boxShadow: '0 4px 8px 0 rgba(0, 0, 0, 0.2)', borderRadius: '8px', padding: '20px', width: '60%', maxWidth: '400px' }}>
-    <h1 style={{ textAlign: 'center', color:'magenta' }}>Login</h1>
+    <h1 style={{ textAlign: 'center'}}>Login</h1>
     <form onSubmit={handleSubmit}>
       {error && <p className="error-message">{error}</p>}
       <div className="form-group">
@@ -54,7 +54,7 @@ function Login() {
           value={formData.email}
           placeholder="Email"
           onChange={handleChange}
-          style={{ fontSize: '14px', color: 'magenta' }}
+          style={{ fontSize: '14px'}}
         />
       </div>
       <div className="form-group">
@@ -64,10 +64,10 @@ function Login() {
           placeholder="Password"
           value={formData.password}
           onChange={handleChange}
-          style={{ fontSize: '14px', color: 'magenta' }}
+          style={{ fontSize: '14px'}}
         />
       </div>
-      <button type="submit" style={{ fontSize: '14px', color: 'magenta' }}>Login</button>
+      <button type="submit" style={{ fontSize: '14px' }}>Login</button>
     </form>
   </div>
 </div>

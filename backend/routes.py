@@ -1,4 +1,4 @@
-import re  # Import the regular expression module
+import re  
 from flask import jsonify, request
 from app import app, db, User, Project, Task, Review, Rating
 from flask_cors import CORS
