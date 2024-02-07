@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
-
 function Login() {
   const navigate = useNavigate();
   const [formData, setFormData] = useState({ email: '', password: '' });
@@ -31,6 +30,7 @@ function Login() {
         const data = await response.json();
         
         localStorage.setItem('access_token', data.access_token);
+        localStorage.setItem('username', data.username); // Store username in local storage
         navigate('/dashboard'); 
       } else {
         const data = await response.json();
@@ -43,35 +43,34 @@ function Login() {
 
   return (
     <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh' }}>
-  <div className="card" style={{ boxShadow: '0 4px 8px 0 rgba(0, 0, 0, 0.2)', borderRadius: '8px', padding: '20px', width: '60%', maxWidth: '400px' }}>
-    <h1 style={{ textAlign: 'center'}}>Login</h1>
-    <form onSubmit={handleSubmit}>
-      {error && <p className="error-message">{error}</p>}
-      <div className="form-group">
-        <input
-          type="text"
-          name="email"
-          value={formData.email}
-          placeholder="Email"
-          onChange={handleChange}
-          style={{ fontSize: '14px'}}
-        />
+      <div className="card" style={{ boxShadow: '0 4px 8px 0 rgba(0, 0, 0, 0.2)', borderRadius: '8px', padding: '20px', width: '60%', maxWidth: '400px' }}>
+        <h1 style={{ textAlign: 'center'}}>Login</h1>
+        <form onSubmit={handleSubmit}>
+          {error && <p className="error-message">{error}</p>}
+          <div className="form-group">
+            <input
+              type="text"
+              name="email"
+              value={formData.email}
+              placeholder="Email"
+              onChange={handleChange}
+              style={{ fontSize: '14px'}}
+            />
+          </div>
+          <div className="form-group">
+            <input
+              type="password"
+              name="password"
+              placeholder="Password"
+              value={formData.password}
+              onChange={handleChange}
+              style={{ fontSize: '14px'}}
+            />
+          </div>
+          <button type="submit" style={{ fontSize: '14px' }}>Login</button>
+        </form>
       </div>
-      <div className="form-group">
-        <input
-          type="password"
-          name="password"
-          placeholder="Password"
-          value={formData.password}
-          onChange={handleChange}
-          style={{ fontSize: '14px'}}
-        />
-      </div>
-      <button type="submit" style={{ fontSize: '14px' }}>Login</button>
-    </form>
-  </div>
-</div>
-
+    </div>
   );
 }
 

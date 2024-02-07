@@ -76,6 +76,8 @@ def register_user():
 
 # user login
 
+
+
 @app.route('/login_user', methods=['POST'])
 def login():
     data = request.get_json()
@@ -86,9 +88,12 @@ def login():
 
     if user and bcrypt.check_password_hash(user.password, password):
         access_token = create_access_token(identity={'user_id': user.id})
-        return jsonify({'access_token': access_token, 'message': 'Login successful'}), 200
+        return jsonify({'access_token': access_token, 'username': user.username, 'message': 'Login successful'}), 200
     else:
         return jsonify({'message': 'Invalid Credentials!'}), 401
+
+
+
 
 # creating a project
 @app.route('/createproject', methods=['POST'])
